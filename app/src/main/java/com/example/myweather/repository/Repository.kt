@@ -10,4 +10,5 @@ class Repository @Inject constructor(
 ) {
     //api
     fun getWeather(lat : Double, lon : Double, apiId : String) = apiHelper.getWeather(lat , lon, apiId)
+    fun getWeatherFiveDay(lat : Double, lon : Double, apiId : String) = apiHelper.getWeatherFiveDay(lat, lon, apiId)
 }

@@ -1,3 +1,5 @@
+package com.example.myweather.ui.activity.mainActivtiy
+
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle

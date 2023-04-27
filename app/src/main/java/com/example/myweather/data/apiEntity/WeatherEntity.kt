@@ -6,33 +6,56 @@ import com.squareup.moshi.JsonClass
 
 @Keep
 @JsonClass(generateAdapter = true)
+data class WeatherFiveDayEntity(
+    val city: City? = null,
+    val cnt: Int? = 0,
+    val cod: String? = "",
+    val list: List<WeatherEntity>,
+    val message: Int? = 0
+)
+
+data class City(
+    val coord: Coord? = null,
+    val country: String? = "",
+    val id: Int? = 0,
+    val name: String? = "",
+    val population: Int? = 0,
+    val sunrise: Int? = 0,
+    val sunset: Int? = 0,
+    val timezone: Int? = 0
+)
+
+@Keep
+@JsonClass(generateAdapter = true)
 data class WeatherEntity(
     @Json(name = "base")
-    var base: String,
+    var base: String? = "",
     @Json(name = "clouds")
-    var clouds: Clouds,
+    var clouds: Clouds? = null,
     @Json(name = "cod")
-    var cod: Int,
+    var cod: Int? = 0,
     @Json(name = "coord")
-    var coord: Coord,
+    var coord: Coord? = null,
     @Json(name = "dt")
-    var dt: Int,
+    var dt: Int? = 0,
     @Json(name = "id")
-    var id: Int,
+    var id: Int? = 0,
     @Json(name = "main")
     var main: Main,
     @Json(name = "name")
-    var name: String,
+    var name: String? = "",
     @Json(name = "sys")
-    var sys: Sys,
+    var sys: Sys? = null,
     @Json(name = "timezone")
-    var timezone: Int,
+    var timezone: Int? = 0,
     @Json(name = "visibility")
-    var visibility: Int,
+    var visibility: Int? = 0,
     @Json(name = "weather")
     var weather: List<Weather>,
     @Json(name = "wind")
-    var wind: Wind
+    var wind: Wind,
+    @Json(name = "dt_txt")
+    var dt_txt : String? = ""
 )
 
 @Keep
@@ -76,15 +99,15 @@ data class Main(
 @JsonClass(generateAdapter = true)
 data class Sys(
     @Json(name = "country")
-    var country: String,
+    var country: String? = "",
     @Json(name = "id")
-    var id: Int,
+    var id: Int? = 0,
     @Json(name = "sunrise")
-    var sunrise: Int,
+    var sunrise: Int? =0,
     @Json(name = "sunset")
-    var sunset: Int,
+    var sunset: Int? =0,
     @Json(name = "type")
-    var type: Int
+    var type: Int? =0
 )
 
 @Keep

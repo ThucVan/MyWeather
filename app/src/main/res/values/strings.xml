@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">MyWeather</string>
     <string name="permissionsDeny">This app needs location permission to run !</string>
+    <string name="toDay">To Day\n</string>
+    <string name="nextFiveDay">Next 5 Days</string>
+    <string name="template">%s ℃</string>
+    <string name="temMin">Temp Min : %s℃</string>
+    <string name="temMax">Temp Max : %s℃</string>
+    <string name="wind">Wind : %s km/h</string>
+    <string name="humidity">Humidity : %s</string>
 </resources>

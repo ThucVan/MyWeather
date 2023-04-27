@@ -1,6 +1,5 @@
-package com.example.myweather.ui.activity
+package com.example.myweather.ui.activity.mainActivtiy
 
-import ViewPager2Adapter
 import android.Manifest
 import android.content.pm.PackageManager
 import android.view.LayoutInflater
@@ -8,8 +7,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
@@ -20,6 +17,7 @@ import com.example.myweather.ui.fragment.MapFrg
 import com.example.myweather.ui.fragment.UserFrg
 import com.example.myweather.ui.fragment.homeFrg.HomeFrg
 import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
+import com.example.myweather.util.Constants.REQUEST_CODE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +35,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun setUpView() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        val locationPermissionRequest = registerForActivityResult(
+        registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             when {
@@ -57,19 +55,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            locationPermissionRequest.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
-                )
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                REQUEST_CODE
             )
-        }
-
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location->
-                if (location != null) {
-                    homeFrgViewModel.getWeather(location.latitude, location.longitude, BuildConfig.API_KEY)
+        }else{
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location->
+                    if (location != null) {
+                        homeFrgViewModel.getWeather(location.latitude, location.longitude, BuildConfig.API_KEY)
+                    }
                 }
-            }
+        }
 
         viewPager2Adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
         viewPager2Adapter.addFragment(HomeFrg())
@@ -120,5 +118,35 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private fun updateNavigationBarState(actionId: Int) {
         binding.bottomNavigationView.selectedItemId = actionId
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location->
+                        if (location != null) {
+                            homeFrgViewModel.getWeather(location.latitude, location.longitude, BuildConfig.API_KEY)
+                        }
+                    }
+            } else {
+                Toast.makeText(this, getString(R.string.permissionsDeny), Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
