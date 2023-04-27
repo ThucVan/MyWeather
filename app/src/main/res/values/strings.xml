@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MyWeather</string>
+    <string name="permissionsDeny">This app needs location permission to run !</string>
+</resources>
