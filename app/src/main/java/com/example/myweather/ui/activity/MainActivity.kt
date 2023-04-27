@@ -6,8 +6,12 @@ import android.content.pm.PackageManager
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
+import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.databinding.ActivityMainBinding
 import com.example.myweather.ui.base.BaseActivity
@@ -15,15 +19,24 @@ import com.example.myweather.ui.fragment.FavoriteFrg
 import com.example.myweather.ui.fragment.MapFrg
 import com.example.myweather.ui.fragment.UserFrg
 import com.example.myweather.ui.fragment.homeFrg.HomeFrg
+import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
+    private val homeFrgViewModel : HomeFrgViewModel by viewModels()
+
     private lateinit var viewPager2Adapter: ViewPager2Adapter
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun getViewBinding(inflater: LayoutInflater) = ActivityMainBinding.inflate(inflater)
 
     override fun setUpView() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         val locationPermissionRequest = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -50,6 +63,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 )
             )
         }
+
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location->
+                if (location != null) {
+                    homeFrgViewModel.getWeather(location.latitude, location.longitude, BuildConfig.API_KEY)
+                }
+            }
 
         viewPager2Adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
         viewPager2Adapter.addFragment(HomeFrg())

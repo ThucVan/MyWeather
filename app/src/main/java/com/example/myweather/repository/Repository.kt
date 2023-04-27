@@ -9,7 +9,5 @@ class Repository @Inject constructor(
     private val apiHelper: ApiService
 ) {
     //api
-    fun getLocationKey(nameCountry : String) = apiHelper.getLocationKey(nameCountry)
-    fun getWeather24H(key: String) = apiHelper.getWeather24H(key)
-    fun getWeatherDay(key : String) = apiHelper.getWeatherDay(key)
+    fun getWeather(lat : Double, lon : Double, apiId : String) = apiHelper.getWeather(lat , lon, apiId)
 }
