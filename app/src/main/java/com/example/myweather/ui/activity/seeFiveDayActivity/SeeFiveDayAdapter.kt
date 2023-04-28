@@ -1,4 +1,4 @@
-package com.example.myweather.ui.fragment.homeFrg
+package com.example.myweather.ui.activity.seeFiveDayActivity
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -9,10 +9,11 @@ import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.databinding.ItemWeatherBinding
+import com.example.myweather.databinding.ItemWeatherFiveDayBinding
 import com.example.myweather.util.Constants
 import java.text.DecimalFormat
 
-class AdapterHome : RecyclerView.Adapter<AdapterHome.ViewHolder>() {
+class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
     var arrWeather = mutableListOf<WeatherEntity>()
 
     fun setList(newList: List<WeatherEntity>) {
@@ -25,7 +26,7 @@ class AdapterHome : RecyclerView.Adapter<AdapterHome.ViewHolder>() {
         parent: ViewGroup, viewType: Int
     ): ViewHolder {
         return ViewHolder(
-            ItemWeatherBinding.inflate(
+            ItemWeatherFiveDayBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
@@ -39,7 +40,7 @@ class AdapterHome : RecyclerView.Adapter<AdapterHome.ViewHolder>() {
         return arrWeather.size
     }
 
-    inner class ViewHolder(private val binding: ItemWeatherBinding) :
+    inner class ViewHolder(private val binding: ItemWeatherFiveDayBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SimpleDateFormat")
         fun onBinding(data: WeatherEntity) {

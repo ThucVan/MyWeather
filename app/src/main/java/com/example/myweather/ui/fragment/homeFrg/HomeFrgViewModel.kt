@@ -16,13 +16,13 @@ class HomeFrgViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val weatherLiveData = MutableStateLiveData<WeatherEntity>()
-    val weatherDelDayLiveData = MutableStateLiveData<WeatherFiveDayEntity>()
+    val weatherFiveDayLiveData = MutableStateLiveData<WeatherFiveDayEntity>()
 
     fun getWeather(lat : Double, lon : Double, apiId : String){
         weatherLiveData.postLoading()
         bgScope.launch {
             mainRepository.getWeather(lat, lon, apiId).collectAsSateLiveData(weatherLiveData)
-            mainRepository.getWeatherFiveDay(lat, lon, apiId).collectAsSateLiveData(weatherDelDayLiveData)
+            mainRepository.getWeatherFiveDay(lat, lon, apiId).collectAsSateLiveData(weatherFiveDayLiveData)
         }
     }
 }

@@ -18,6 +18,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.searchActivity.SearchActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCSR9P1OX5qOlxfpbz1ZTigZGBBxd7HfjU" />
+
+        <activity
             android:name=".ui.activity.mainActivtiy.MainActivity"
             android:exported="true">
             <intent-filter>
@@ -26,9 +34,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.activity.seeFiveDayActivity.SeeFiveDayActivity"
-            android:exported="false"/>
+        <activity
+            android:name=".ui.activity.seeFiveDayActivity.SeeFiveDayActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

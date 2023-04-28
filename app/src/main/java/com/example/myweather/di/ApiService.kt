@@ -9,15 +9,11 @@ import retrofit2.http.Query
 interface ApiService {
     @GET("weather?")
     fun getWeather(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
-        @Query("appid") apiId : String
-    ) : Flow<WeatherEntity>
+        @Query("lat") lat: Double, @Query("lon") lon: Double, @Query("appid") apiId: String
+    ): Flow<WeatherEntity>
 
     @GET("forecast?")
     fun getWeatherFiveDay(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
-        @Query("appid") apiId : String
-    ) : Flow<WeatherFiveDayEntity>
+        @Query("lat") lat: Double, @Query("lon") lon: Double, @Query("appid") apiId: String
+    ): Flow<WeatherFiveDayEntity>
 }

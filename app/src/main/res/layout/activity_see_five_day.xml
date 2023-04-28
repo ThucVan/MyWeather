@@ -5,6 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimation"
+        app:lottie_rawRes="@raw/weather"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
@@ -31,9 +39,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:textStyle="bold"
         android:text="@string/toDay"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnBack" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvWeatherToDay"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginHorizontal="10dp"
+        android:orientation="horizontal"
+        android:overScrollMode="never"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/tvToday"
+        tools:listitem="@layout/item_weather" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvWeatherFiveDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="30dp"
+        android:overScrollMode="never"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/rcvWeatherToDay"
+        tools:listitem="@layout/item_weather_five_day" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

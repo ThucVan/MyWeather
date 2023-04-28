@@ -8,4 +8,8 @@
     <string name="temMax">Temp Max : %s℃</string>
     <string name="wind">Wind : %s km/h</string>
     <string name="humidity">Humidity : %s</string>
+    <string name="hintSearch">Enter the location !</string>
+    <string name="yourLocal">My current location</string>
+    <string name="searchErr">Your location could not be found!</string>
+    <string name="templateChart">Temperature ℃</string>
 </resources>

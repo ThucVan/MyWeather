@@ -1,6 +1,7 @@
 package com.example.myweather.ui.activity.mainActivtiy
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -11,12 +12,15 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.databinding.ActivityMainBinding
+import com.example.myweather.ui.activity.searchActivity.SearchActivity
 import com.example.myweather.ui.base.BaseActivity
 import com.example.myweather.ui.fragment.FavoriteFrg
-import com.example.myweather.ui.fragment.MapFrg
 import com.example.myweather.ui.fragment.UserFrg
 import com.example.myweather.ui.fragment.homeFrg.HomeFrg
 import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
+import com.example.myweather.ui.fragment.mapFrg.MapFrg
+import com.example.myweather.util.Constants.LATITUDE_HANOI
+import com.example.myweather.util.Constants.LONGITUDE_HANOI
 import com.example.myweather.util.Constants.REQUEST_CODE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -24,17 +28,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
-    private val homeFrgViewModel : HomeFrgViewModel by viewModels()
-
     private lateinit var viewPager2Adapter: ViewPager2Adapter
-
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun getViewBinding(inflater: LayoutInflater) = ActivityMainBinding.inflate(inflater)
 
     override fun setUpView() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -42,31 +40,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {}
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {}
                 else -> {
-                    Toast.makeText(this, getString(R.string.permissionsDeny), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.permissionsDeny), Toast.LENGTH_LONG)
+                        .show()
                 }
             }
-        }
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                REQUEST_CODE
-            )
-        }else{
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location->
-                    if (location != null) {
-                        homeFrgViewModel.getWeather(location.latitude, location.longitude, BuildConfig.API_KEY)
-                    }
-                }
         }
 
         viewPager2Adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
@@ -75,8 +52,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         viewPager2Adapter.addFragment(FavoriteFrg())
         viewPager2Adapter.addFragment(UserFrg())
 
-        binding.viewPagerMain.adapter = viewPager2Adapter
-        binding.viewPagerMain.offscreenPageLimit = 5
+        binding.viewPagerMain.apply {
+            adapter = viewPager2Adapter
+            offscreenPageLimit = 5
+            isUserInputEnabled = false
+        }
 
         binding.bottomNavigationView.setOnApplyWindowInsetsListener(null)
         binding.viewPagerMain.apply {
@@ -112,41 +92,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
 
         binding.fabSearch.setOnClickListener {
-
+            startActivity(Intent(this, SearchActivity::class.java))
         }
     }
 
     private fun updateNavigationBarState(actionId: Int) {
         binding.bottomNavigationView.selectedItemId = actionId
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    return
-                }
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location->
-                        if (location != null) {
-                            homeFrgViewModel.getWeather(location.latitude, location.longitude, BuildConfig.API_KEY)
-                        }
-                    }
-            } else {
-                Toast.makeText(this, getString(R.string.permissionsDeny), Toast.LENGTH_LONG).show()
-            }
-        }
     }
 }
