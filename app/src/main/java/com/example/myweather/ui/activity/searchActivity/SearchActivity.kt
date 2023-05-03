@@ -15,8 +15,9 @@ import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.ActivitySearchBinding
 import com.example.myweather.ui.base.BaseActivity
 import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
-import com.example.myweather.util.Constants.LATITUDE_HANOI
-import com.example.myweather.util.Constants.LONGITUDE_HANOI
+import com.example.myweather.util.Constants.LATITUDE
+import com.example.myweather.util.Constants.LONGITUDE
+import com.example.myweather.util.SharePrefUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,7 +36,9 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var temple = ""
-    private var currentLatLng = LatLng(LATITUDE_HANOI, LONGITUDE_HANOI)
+    private val latitude = SharePrefUtils.getLong(LATITUDE, 0)
+    private val longitude = SharePrefUtils.getLong(LONGITUDE, 0)
+    private var currentLatLng = LatLng(latitude.toDouble(), longitude.toDouble())
     private lateinit var googleMap: GoogleMap
 
     override fun getViewBinding(inflater: LayoutInflater) = ActivitySearchBinding.inflate(inflater)
@@ -103,7 +106,7 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
                 )
             } else {
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
-                homeFrgViewModel.getWeather(LATITUDE_HANOI, LONGITUDE_HANOI, BuildConfig.API_KEY)
+                homeFrgViewModel.getWeather(latitude.toDouble(), longitude.toDouble(), BuildConfig.API_KEY)
             }
         }
 

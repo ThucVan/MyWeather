@@ -2,14 +2,10 @@ package com.example.myweather.ui.activity.mainActivtiy
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.databinding.ActivityMainBinding
 import com.example.myweather.ui.activity.searchActivity.SearchActivity
@@ -17,13 +13,7 @@ import com.example.myweather.ui.base.BaseActivity
 import com.example.myweather.ui.fragment.FavoriteFrg
 import com.example.myweather.ui.fragment.UserFrg
 import com.example.myweather.ui.fragment.homeFrg.HomeFrg
-import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
 import com.example.myweather.ui.fragment.mapFrg.MapFrg
-import com.example.myweather.util.Constants.LATITUDE_HANOI
-import com.example.myweather.util.Constants.LONGITUDE_HANOI
-import com.example.myweather.util.Constants.REQUEST_CODE
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

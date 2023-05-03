@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,8 +21,11 @@ import com.example.myweather.databinding.FragmentHomeFrgBinding
 import com.example.myweather.ui.activity.seeFiveDayActivity.SeeFiveDayActivity
 import com.example.myweather.ui.base.BaseFragment
 import com.example.myweather.util.Constants
+import com.example.myweather.util.Constants.LATITUDE
+import com.example.myweather.util.Constants.LONGITUDE
 import com.example.myweather.util.Constants.percentExtensions
 import com.example.myweather.util.Constants.pngExtensions
+import com.example.myweather.util.SharePrefUtils
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -64,8 +66,8 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                 requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(
+            requestPermissions(
+                arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ), Constants.REQUEST_CODE
@@ -76,6 +78,8 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                     homeFrgViewModel.getWeather(
                         location.latitude, location.longitude, BuildConfig.API_KEY
                     )
+                    SharePrefUtils.putLong(LATITUDE, location.latitude.toLong())
+                    SharePrefUtils.putLong(LONGITUDE, location.longitude.toLong())
                 }
             }
         }
@@ -218,43 +222,14 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                         homeFrgViewModel.getWeather(
                             location.latitude, location.longitude, BuildConfig.API_KEY
                         )
-
-                        var countDownTimer: CountDownTimer? = null
-                        countDownTimer = object : CountDownTimer(60000, 10) {
-                            override fun onTick(millisUntilFinished: Long) {
-                                try {
-                                    homeFrgViewModel.getWeather(
-                                        Constants.LATITUDE_HANOI,
-                                        Constants.LONGITUDE_HANOI,
-                                        BuildConfig.API_KEY
-                                    )
-                                    binding.lottieAnimation.pauseAnimation()
-                                    binding.lottieAnimation.isGone = true
-                                    cancel()
-                                } catch (e: Exception) {
-                                    binding.lottieAnimation.pauseAnimation()
-                                    binding.lottieAnimation.isGone = true
-                                    cancel()
-                                }
-                            }
-
-                            override fun onFinish() {
-                                binding.lottieAnimation.pauseAnimation()
-                                binding.lottieAnimation.isGone = true
-                            }
-                        }
-                        (countDownTimer as CountDownTimer).start()
-
+                        SharePrefUtils.putLong(LATITUDE, location.latitude.toLong())
+                        SharePrefUtils.putLong(LONGITUDE, location.longitude.toLong())
                     } else {
-                        homeFrgViewModel.getWeather(
-                            Constants.LATITUDE_HANOI, Constants.LONGITUDE_HANOI, BuildConfig.API_KEY
-                        )
+                        Toast.makeText(
+                            requireContext(), getString(R.string.permissionsDeny), Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
-            } else {
-                Toast.makeText(
-                    requireContext(), getString(R.string.permissionsDeny), Toast.LENGTH_LONG
-                ).show()
             }
         }
     }

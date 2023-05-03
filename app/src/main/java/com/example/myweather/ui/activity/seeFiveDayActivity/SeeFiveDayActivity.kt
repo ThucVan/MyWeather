@@ -15,6 +15,9 @@ import com.example.myweather.ui.base.BaseActivity
 import com.example.myweather.ui.fragment.homeFrg.HomeAdapter
 import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
 import com.example.myweather.util.Constants
+import com.example.myweather.util.Constants.LATITUDE
+import com.example.myweather.util.Constants.LONGITUDE
+import com.example.myweather.util.SharePrefUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +32,6 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
     private var arrWeatherDay = mutableListOf<WeatherEntity>()
     private lateinit var homeAdapter: HomeAdapter
     private lateinit var seeFiveDayAdapter: SeeFiveDayAdapter
-
 
     override fun getViewBinding(inflater: LayoutInflater): ActivitySeeFiveDayBinding =
         ActivitySeeFiveDayBinding.inflate(inflater)
@@ -50,18 +52,20 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
             return
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    homeFrgViewModel.getWeather(
-                        location.latitude,
-                        location.longitude,
-                        BuildConfig.API_KEY
-                    )
-                } else {
-                    homeFrgViewModel.getWeather(
-                        Constants.LATITUDE_HANOI, Constants.LONGITUDE_HANOI, BuildConfig.API_KEY
-                    )
-                }
+            if (location != null) {
+                homeFrgViewModel.getWeather(
+                    location.latitude,
+                    location.longitude,
+                    BuildConfig.API_KEY
+                )
+            } else {
+                homeFrgViewModel.getWeather(
+                    SharePrefUtils.getLong(LATITUDE, 0).toDouble(), SharePrefUtils.getLong(
+                        LONGITUDE, 0
+                    ).toDouble(), BuildConfig.API_KEY
+                )
             }
+        }
 
         binding.rcvWeatherToDay.apply {
             adapter = homeAdapter
