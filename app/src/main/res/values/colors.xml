@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="bg_frg">#010B49</color>
+    <color name="textColor">#24609b</color>
+    <color name="color_nav_no_select">#4D706D6D</color>
 </resources>

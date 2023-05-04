@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.searchActivity.SearchActivity">
+    tools:context=".ui.activity.main.search.SearchActivity">
 
     <androidx.cardview.widget.CardView
         android:layout_marginTop="50dp"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/ediSearch"
+            android:id="@+id/editSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
@@ -27,25 +27,25 @@
             android:padding="20dp"
             android:maxLines="1"
             android:inputType="text"
-            android:hint="@string/hintSearch"
+            android:hint="@string/txtHintSearch"
             android:imeOptions="actionSearch"/>
 
     </androidx.cardview.widget.CardView>
 
     <fragment
-        android:id="@+id/map"
+        android:id="@+id/fragmentMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/btnBack"
+        android:id="@+id/buttonBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="15dp"
         android:background="@null"
-        android:src="@android:drawable/ic_menu_revert"
+        android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

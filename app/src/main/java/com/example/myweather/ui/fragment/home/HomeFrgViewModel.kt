@@ -1,10 +1,10 @@
-package com.example.myweather.ui.fragment.homeFrg
+package com.example.myweather.ui.fragment.home
 
 import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.data.apiEntity.WeatherFiveDayEntity
 import com.example.myweather.data.liveData.MutableStateLiveData
 import com.example.myweather.repository.Repository
-import com.example.myweather.ui.base.BaseViewModel
+import com.example.myweather.base.BaseViewModel
 import com.example.myweather.util.flow.collectAsSateLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

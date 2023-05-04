@@ -1,4 +1,4 @@
-package com.example.myweather.ui.activity.seeFiveDayActivity
+package com.example.myweather.ui.activity.main.seeFiveDay
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -11,10 +11,9 @@ import com.example.myweather.BuildConfig
 import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.ActivitySeeFiveDayBinding
-import com.example.myweather.ui.base.BaseActivity
-import com.example.myweather.ui.fragment.homeFrg.HomeAdapter
-import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
-import com.example.myweather.util.Constants
+import com.example.myweather.base.BaseActivity
+import com.example.myweather.ui.fragment.home.HomeAdapter
+import com.example.myweather.ui.fragment.home.HomeFrgViewModel
 import com.example.myweather.util.Constants.LATITUDE
 import com.example.myweather.util.Constants.LONGITUDE
 import com.example.myweather.util.SharePrefUtils
@@ -40,7 +39,7 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
         homeAdapter = HomeAdapter()
         seeFiveDayAdapter = SeeFiveDayAdapter()
 
-        binding.btnBack.setOnClickListener { finish() }
+        binding.buttonBack.setOnClickListener { finish() }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         if (ActivityCompat.checkSelfPermission(
@@ -54,9 +53,7 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 homeFrgViewModel.getWeather(
-                    location.latitude,
-                    location.longitude,
-                    BuildConfig.API_KEY
+                    location.latitude, location.longitude, BuildConfig.API_KEY
                 )
             } else {
                 homeFrgViewModel.getWeather(
@@ -65,11 +62,6 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
                     ).toDouble(), BuildConfig.API_KEY
                 )
             }
-        }
-
-        binding.rcvWeatherToDay.apply {
-            adapter = homeAdapter
-            setHasFixedSize(true)
         }
 
         binding.rcvWeatherFiveDay.apply {
@@ -104,6 +96,7 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
                                     arrWeatherDay.add(weatherEntity)
                                 }
                             }
+
                             homeAdapter.setList(arrWeatherDay)
                             seeFiveDayAdapter.setList(weatherFiveDayEntity.list)
                         }

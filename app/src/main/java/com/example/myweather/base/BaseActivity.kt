@@ -1,4 +1,4 @@
-package com.example.myweather.ui.base
+package com.example.myweather.base
 
 import android.graphics.Color
 import android.os.Build

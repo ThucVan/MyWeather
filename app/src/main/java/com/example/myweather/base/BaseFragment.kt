@@ -1,4 +1,4 @@
-package com.example.myweather.ui.base
+package com.example.myweather.base
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package com.example.myweather.ui.fragment.mapFrg
+package com.example.myweather.ui.fragment.map
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -11,11 +11,8 @@ import androidx.core.app.ActivityCompat
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.databinding.FragmentMapFrgBinding
-import com.example.myweather.ui.base.BaseFragment
+import com.example.myweather.base.BaseFragment
 import com.example.myweather.util.Constants
-import com.example.myweather.util.Constants.LATITUDE
-import com.example.myweather.util.Constants.LONGITUDE
-import com.example.myweather.util.SharePrefUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -30,7 +27,7 @@ import com.google.android.gms.maps.model.UrlTileProvider
 import java.net.MalformedURLException
 import java.net.URL
 
-class MapFrg : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
+class MapFragment : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var googleMap: GoogleMap
 
@@ -43,7 +40,7 @@ class MapFrg : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         val supportMapFragment =
-            childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+            childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment?
         supportMapFragment!!.getMapAsync(this)
     }
 
@@ -120,7 +117,7 @@ class MapFrg : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
                     Toast.makeText(
-                        requireContext(), getString(R.string.permissionsDeny), Toast.LENGTH_LONG
+                        requireContext(), getString(R.string.txtPermissionsDeny), Toast.LENGTH_LONG
                     ).show()
                     return
                 }

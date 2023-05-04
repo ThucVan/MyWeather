@@ -5,49 +5,37 @@
     android:layout_height="match_parent">
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPagerMain"
+        android:id="@+id/viewPager2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
+        android:layout_height="0dp"
+        android:layout_above="@+id/bottomNavigationView"
+        android:layout_alignParentTop="true"
         android:overScrollMode="never" />
 
-    <LinearLayout
-        android:id="@+id/frame"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
+        app:menu="@menu/main_bottom_menu" />
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/relativeSearch"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_above="@+id/bottomNavigationView"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.bottomappbar.BottomAppBar
-                android:id="@+id/bottomAppBar"
-                android:backgroundTint="@color/bg_frg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                app:fabCradleMargin="10dp"
-                app:fabCradleRoundedCornerRadius="10dp"
-                app:fabCradleVerticalOffset="10dp">
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_search" />
+    </RelativeLayout>
 
-                <com.google.android.material.bottomnavigation.BottomNavigationView
-                    android:id="@+id/bottomNavigationView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:itemIconTint="@color/white"
-                    android:layout_marginEnd="16dp"
-                    android:background="@android:color/transparent"
-                    app:menu="@menu/main_bottom_menu" />
-            </com.google.android.material.bottomappbar.BottomAppBar>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/search"
-                app:layout_anchor="@id/bottomAppBar" />
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    </LinearLayout>
 </RelativeLayout>

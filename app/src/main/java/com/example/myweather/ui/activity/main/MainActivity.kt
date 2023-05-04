@@ -1,4 +1,4 @@
-package com.example.myweather.ui.activity.mainActivtiy
+package com.example.myweather.ui.activity.main
 
 import android.Manifest
 import android.content.Intent
@@ -7,13 +7,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewpager2.widget.ViewPager2
 import com.example.myweather.R
+import com.example.myweather.base.BaseActivity
 import com.example.myweather.databinding.ActivityMainBinding
-import com.example.myweather.ui.activity.searchActivity.SearchActivity
-import com.example.myweather.ui.base.BaseActivity
-import com.example.myweather.ui.fragment.FavoriteFrg
-import com.example.myweather.ui.fragment.UserFrg
-import com.example.myweather.ui.fragment.homeFrg.HomeFrg
-import com.example.myweather.ui.fragment.mapFrg.MapFrg
+import com.example.myweather.ui.activity.main.search.SearchActivity
+import com.example.myweather.ui.fragment.FavoriteFragment
+import com.example.myweather.ui.fragment.UserFragment
+import com.example.myweather.ui.fragment.home.HomeFragment
+import com.example.myweather.ui.fragment.map.MapFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,26 +30,26 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {}
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {}
                 else -> {
-                    Toast.makeText(this, getString(R.string.permissionsDeny), Toast.LENGTH_LONG)
+                    Toast.makeText(this, getString(R.string.txtPermissionsDeny), Toast.LENGTH_LONG)
                         .show()
                 }
             }
         }
 
         viewPager2Adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
-        viewPager2Adapter.addFragment(HomeFrg())
-        viewPager2Adapter.addFragment(MapFrg())
-        viewPager2Adapter.addFragment(FavoriteFrg())
-        viewPager2Adapter.addFragment(UserFrg())
+        viewPager2Adapter.addFragment(HomeFragment())
+        viewPager2Adapter.addFragment(MapFragment())
+        viewPager2Adapter.addFragment(FavoriteFragment())
+        viewPager2Adapter.addFragment(UserFragment())
 
-        binding.viewPagerMain.apply {
+        binding.viewPager2.apply {
             adapter = viewPager2Adapter
             offscreenPageLimit = 5
             isUserInputEnabled = false
         }
 
         binding.bottomNavigationView.setOnApplyWindowInsetsListener(null)
-        binding.viewPagerMain.apply {
+        binding.viewPager2.apply {
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
@@ -66,22 +66,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navHome -> {
-                    binding.viewPagerMain.currentItem = 0
+                    binding.viewPager2.currentItem = 0
                 }
                 R.id.navMap -> {
-                    binding.viewPagerMain.currentItem = 1
+                    binding.viewPager2.currentItem = 1
                 }
                 R.id.navFavorite -> {
-                    binding.viewPagerMain.currentItem = 2
+                    binding.viewPager2.currentItem = 2
                 }
                 R.id.navUser -> {
-                    binding.viewPagerMain.currentItem = 3
+                    binding.viewPager2.currentItem = 3
                 }
             }
             true
         }
 
-        binding.fabSearch.setOnClickListener {
+        binding.relativeSearch.setOnClickListener {
             startActivity(Intent(this, SearchActivity::class.java))
         }
     }

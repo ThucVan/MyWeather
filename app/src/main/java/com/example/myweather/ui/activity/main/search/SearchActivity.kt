@@ -1,34 +1,46 @@
-package com.example.myweather.ui.activity.searchActivity
+package com.example.myweather.ui.activity.main.search
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.location.Geocoder
 import android.location.Location
 import android.view.LayoutInflater
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
+import com.example.myweather.base.BaseActivity
 import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.ActivitySearchBinding
-import com.example.myweather.ui.base.BaseActivity
-import com.example.myweather.ui.fragment.homeFrg.HomeFrgViewModel
+import com.example.myweather.ui.fragment.home.HomeFrgViewModel
+import com.example.myweather.util.Constants
 import com.example.myweather.util.Constants.LATITUDE
 import com.example.myweather.util.Constants.LONGITUDE
 import com.example.myweather.util.SharePrefUtils
+import com.example.myweather.util.viewToBitmap
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.DecimalFormat
-
 
 @AndroidEntryPoint
 class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback {
@@ -36,6 +48,8 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var temple = ""
+    private var iconWeather = ""
+    private var nameCity = ""
     private val latitude = SharePrefUtils.getLong(LATITUDE, 0)
     private val longitude = SharePrefUtils.getLong(LONGITUDE, 0)
     private var currentLatLng = LatLng(latitude.toDouble(), longitude.toDouble())
@@ -47,14 +61,14 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val supportMapFragment =
-            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+            supportFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment?
         supportMapFragment!!.getMapAsync(this)
 
-        binding.btnBack.setOnClickListener {
+        binding.buttonBack.setOnClickListener {
             finish()
         }
 
-        binding.ediSearch.setOnEditorActionListener { v, actionId, event ->
+        binding.editSearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 getLocation()
             }
@@ -63,21 +77,18 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
     }
 
     private fun getLocation() {
-        val searchString = binding.ediSearch.text.toString()
+        val searchString = binding.editSearch.text.toString()
         val geocoder = Geocoder(this)
         try {
             val city = geocoder.getFromLocationName(searchString, 1)
             currentLatLng = LatLng(city!![0].latitude, city[0].longitude)
 
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
             homeFrgViewModel.getWeather(
                 currentLatLng.latitude, currentLatLng.longitude, BuildConfig.API_KEY
             )
-            googleMap.addMarker(
-                MarkerOptions().position(currentLatLng).title(getString(R.string.template, temple))
-            )
         } catch (e: Exception) {
-            Toast.makeText(this, getString(R.string.searchErr), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.txtSearchErr), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -100,26 +111,19 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
             if (location != null) {
                 lastLocation = location
                 currentLatLng = LatLng(location.latitude, location.longitude)
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
                 homeFrgViewModel.getWeather(
                     location.latitude, location.longitude, BuildConfig.API_KEY
                 )
             } else {
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
-                homeFrgViewModel.getWeather(latitude.toDouble(), longitude.toDouble(), BuildConfig.API_KEY)
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
+                homeFrgViewModel.getWeather(
+                    latitude.toDouble(), longitude.toDouble(), BuildConfig.API_KEY
+                )
             }
         }
 
-        googleMap.setOnMapClickListener { latLng ->
-            currentLatLng = latLng
-            homeFrgViewModel.getWeather(
-                currentLatLng.latitude, currentLatLng.longitude, BuildConfig.API_KEY
-            )
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
-            googleMap.addMarker(
-                MarkerOptions().position(currentLatLng).title(getString(R.string.template, temple))
-            )
-        }
+        getMakerView()
     }
 
     private fun observer() {
@@ -131,7 +135,10 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
                         if (weatherFiveDayEntity != null) {
                             temple =
                                 DecimalFormat("#.#").format((weatherFiveDayEntity.main.temp - 273.15))
+                            iconWeather = weatherFiveDayEntity.weather[0].icon
+                            nameCity = weatherFiveDayEntity.name.toString()
 
+                            getMakerView()
                         }
                     }
                 }
@@ -141,4 +148,46 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
         }
     }
 
+    @SuppressLint("MissingInflatedId")
+    private fun getMakerView() {
+        val makerView: View = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(
+            R.layout.maker_view, null
+        )
+        val tvCity = makerView.findViewById<TextView>(R.id.tvCity)
+        val layoutMaker = makerView.findViewById<ConstraintLayout>(R.id.layoutMaker)
+        val imvMaker = makerView.findViewById<ImageView>(R.id.imvMaker)
+        val tvTemp = makerView.findViewById<TextView>(R.id.tvTemp)
+        tvTemp.text = getString(R.string.txtTemplate, temple)
+        tvCity.text = nameCity
+        Glide.with(this).asBitmap()
+            .load("${BuildConfig.BASE_GET_IMAGE}$iconWeather.${Constants.pngExtensions}")
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(
+                    resource: Bitmap, transition: Transition<in Bitmap>?
+                ) {
+                    imvMaker.setImageBitmap(resource)
+                    makerView.measure(
+                        View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED
+                    )
+                    makerView.layout(
+                        0, 0, makerView.measuredWidth, makerView.measuredHeight
+                    )
+                    makerView.buildDrawingCache()
+                    val bmContent = Bitmap.createScaledBitmap(
+                        viewToBitmap(layoutMaker), layoutMaker.width, layoutMaker.height, false
+                    )
+                    val smallMakerIcon = BitmapDescriptorFactory.fromBitmap(bmContent)
+
+                    googleMap.addMarker(
+                        MarkerOptions().position(currentLatLng).icon(smallMakerIcon)
+                    )
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng))
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+
+                }
+            })
+    }
 }

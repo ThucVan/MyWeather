@@ -37,7 +37,7 @@ data class WeatherEntity(
     @Json(name = "coord")
     var coord: Coord? = null,
     @Json(name = "dt")
-    var dt: Int? = 0,
+    var dt: Long? = 0,
     @Json(name = "id")
     var id: Int? = 0,
     @Json(name = "main")

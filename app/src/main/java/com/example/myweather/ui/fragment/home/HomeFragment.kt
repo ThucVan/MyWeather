@@ -1,4 +1,4 @@
-package com.example.myweather.ui.fragment.homeFrg
+package com.example.myweather.ui.fragment.home
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -12,23 +12,24 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
-import com.bumptech.glide.Glide
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.FragmentHomeFrgBinding
-import com.example.myweather.ui.activity.seeFiveDayActivity.SeeFiveDayActivity
-import com.example.myweather.ui.base.BaseFragment
+import com.example.myweather.ui.activity.main.seeFiveDay.SeeFiveDayActivity
+import com.example.myweather.base.BaseFragment
 import com.example.myweather.util.Constants
 import com.example.myweather.util.Constants.LATITUDE
 import com.example.myweather.util.Constants.LONGITUDE
 import com.example.myweather.util.Constants.percentExtensions
-import com.example.myweather.util.Constants.pngExtensions
 import com.example.myweather.util.SharePrefUtils
+import com.example.myweather.util.convertTime
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,16 +37,16 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 @AndroidEntryPoint
-class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
+class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
     private val homeFrgViewModel: HomeFrgViewModel by activityViewModels()
     private lateinit var homeAdapter: HomeAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var arrWeatherDay = mutableListOf<WeatherEntity>()
 
-    private var dataTemp = ArrayList<String>()
+    private lateinit var lineDataSet: LineDataSet
+
     private var dataEntry = ArrayList<Entry>()
 
     private var position = 0
@@ -97,7 +98,7 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
         observer()
     }
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("StringFormatMatches")
     private fun observer() {
         homeFrgViewModel.weatherLiveData.observe(viewLifecycleOwner) { status ->
             when (status.getStatus()) {
@@ -111,22 +112,24 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                             val humidity =
                                 DecimalFormat("#.#").format((weatherEntity.main.humidity))
 
+                            binding.tvTimeToDay.text = requireContext().getString(
+                                R.string.txtTimeToDay, convertTime(weatherEntity.dt ?: 0, "HH:mm")
+                            )
+
                             binding.tvLocal.text = weatherEntity.name
                             binding.tvStatus.text = weatherEntity.weather[0].description
-
                             binding.tvTemp.text = requireContext().getString(
-                                R.string.template, temple
+                                R.string.txtTemplate, temple
+                            )
+                            binding.tvPressure.text = requireContext().getString(
+                                R.string.txtPressure, weatherEntity.main.pressure
                             )
                             binding.tvWind.text = requireContext().getString(
-                                R.string.wind, wind
+                                R.string.txtWind, wind
                             )
                             binding.tvHumidity.text = requireContext().getString(
-                                R.string.humidity, "$humidity$percentExtensions"
+                                R.string.txtHumidity, "$humidity$percentExtensions"
                             )
-
-                            Glide.with(requireActivity())
-                                .load("${BuildConfig.BASE_GET_IMAGE}${weatherEntity.weather[0].icon}.$pngExtensions")
-                                .into(binding.imgPreviewWeather)
                         }
                     }
                 }
@@ -148,7 +151,6 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                 StateData.DataStatus.LOADING -> {}
                 StateData.DataStatus.SUCCESS -> {
                     position = 0
-                    dataTemp.clear()
                     dataEntry.clear()
                     status.getData().let { weatherFiveDayEntity ->
                         binding.lottieAnimation.isGone = true
@@ -158,14 +160,13 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                             val sdf = SimpleDateFormat("yyyy-MM-dd")
                             val currentDate: String = sdf.format(calendar.time)
 
-                            weatherFiveDayEntity.list.forEach { weatherEntity ->
+                            weatherFiveDayEntity.list.subList(0, 4).forEach { weatherEntity ->
                                 val startDate = weatherEntity.dt_txt?.let { sdf.parse(it) }
                                 val newDateString: String = sdf.format(startDate!!)
 
                                 if (newDateString == currentDate) {
                                     position++
                                     arrWeatherDay.add(weatherEntity)
-                                    dataTemp.add(weatherEntity.dt_txt!!)
 
                                     dataEntry.add(
                                         Entry(
@@ -176,11 +177,8 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                                 }
                             }
 
-                            val lineDataSet =
-                                LineDataSet(dataEntry, getString(R.string.templateChart))
-                            val dataLine = LineData(lineDataSet)
+                            upDateData(dataEntry)
 
-                            binding.lineChart.data = dataLine
                             binding.lineChart.animateXY(3000, 3000)
                             homeAdapter.setList(arrWeatherDay)
                         }
@@ -200,6 +198,39 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
         }
     }
 
+    private fun upDateData(dataTemp: MutableList<Entry>) {
+        lineDataSet = LineDataSet(dataTemp, getString(R.string.txtLabelTemplate))
+
+        val dataSets = ArrayList<ILineDataSet>()
+        dataSets.add(lineDataSet)
+
+        val lineData = LineData(dataSets)
+        val listXValue = listOf(
+            "",
+            getString(R.string.txtMorning),
+            getString(R.string.txtAfternoon),
+            getString(R.string.txtEvening),
+            getString(R.string.txtNight),
+        )
+
+        val xAxis = binding.lineChart.xAxis
+        xAxis.apply {
+            disableAxisLineDashedLine()
+            disableGridDashedLine()
+            position = XAxis.XAxisPosition.BOTTOM
+            valueFormatter =
+                (com.github.mikephil.charting.formatter.IndexAxisValueFormatter(listXValue))
+        }
+
+        binding.lineChart.apply {
+            data = lineData
+            legend.isEnabled = false
+            description.isEnabled = false
+            axisLeft.isEnabled = false
+            axisRight.isEnabled = false
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String?>, grantResults: IntArray
     ) {
@@ -213,7 +244,7 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
                     Toast.makeText(
-                        requireContext(), getString(R.string.permissionsDeny), Toast.LENGTH_LONG
+                        requireContext(), getString(R.string.txtPermissionsDeny), Toast.LENGTH_LONG
                     ).show()
                     return
                 }
@@ -226,7 +257,9 @@ class HomeFrg : BaseFragment<FragmentHomeFrgBinding>() {
                         SharePrefUtils.putLong(LONGITUDE, location.longitude.toLong())
                     } else {
                         Toast.makeText(
-                            requireContext(), getString(R.string.permissionsDeny), Toast.LENGTH_LONG
+                            requireContext(),
+                            getString(R.string.txtPermissionsDeny),
+                            Toast.LENGTH_LONG
                         ).show()
                     }
                 }

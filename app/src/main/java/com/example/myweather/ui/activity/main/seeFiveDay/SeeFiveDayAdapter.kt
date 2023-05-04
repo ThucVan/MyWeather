@@ -1,4 +1,4 @@
-package com.example.myweather.ui.activity.seeFiveDayActivity
+package com.example.myweather.ui.activity.main.seeFiveDay
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -8,9 +8,9 @@ import com.bumptech.glide.Glide
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.data.apiEntity.WeatherEntity
-import com.example.myweather.databinding.ItemWeatherBinding
 import com.example.myweather.databinding.ItemWeatherFiveDayBinding
 import com.example.myweather.util.Constants
+import com.example.myweather.util.convertTime
 import java.text.DecimalFormat
 
 class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
@@ -43,15 +43,15 @@ class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
     inner class ViewHolder(private val binding: ItemWeatherFiveDayBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SimpleDateFormat")
-        fun onBinding(data: WeatherEntity) {
-            val temple = DecimalFormat("#.#").format((data.main.temp - 273.15))
+        fun onBinding(weatherEntity: WeatherEntity) {
+            val temple = DecimalFormat("#.#").format((weatherEntity.main.temp - 273.15))
 
-            binding.tvTime.text = data.dt_txt
+            binding.tvToday.text = convertTime(weatherEntity.dt ?: 0, "EEEE")
 
-            Glide.with(binding.root.context)
-                .load("${BuildConfig.BASE_GET_IMAGE}${data.weather[0].icon}.${Constants.pngExtensions}")
-                .into(binding.imgWeather)
-            binding.tvTemp.text = binding.root.context.getString(R.string.template, temple)
+//            Glide.with(binding.root.context)
+//                .load("${BuildConfig.BASE_GET_IMAGE}${weatherEntity.weather[0].icon}.${Constants.pngExtensions}")
+//                .into(binding.imvWeather)
+//            binding.tvTemp.text = binding.root.context.getString(R.string.txtTemplate, temple)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.myweather.ui.fragment.homeFrg
+package com.example.myweather.ui.fragment.home
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -10,7 +10,9 @@ import com.example.myweather.R
 import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.databinding.ItemWeatherBinding
 import com.example.myweather.util.Constants
+import com.example.myweather.util.convertTime
 import java.text.DecimalFormat
+import java.util.*
 
 class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     var arrWeather = mutableListOf<WeatherEntity>()
@@ -42,15 +44,15 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     inner class ViewHolder(private val binding: ItemWeatherBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SimpleDateFormat")
-        fun onBinding(data: WeatherEntity) {
-            val temple = DecimalFormat("#.#").format((data.main.temp - 273.15))
+        fun onBinding(weatherEntity: WeatherEntity) {
+            val temple = DecimalFormat("#.#").format((weatherEntity.main.temp - 273.15))
 
-            binding.tvTime.text = data.dt_txt
+            binding.tvTimeToDay.text = convertTime(weatherEntity.dt ?: 0, "HH:ss")
 
             Glide.with(binding.root.context)
-                .load("${BuildConfig.BASE_GET_IMAGE}${data.weather[0].icon}.${Constants.pngExtensions}")
-                .into(binding.imgWeather)
-            binding.tvTemp.text = binding.root.context.getString(R.string.template, temple)
+                .load("${BuildConfig.BASE_GET_IMAGE}${weatherEntity.weather[0].icon}.${Constants.pngExtensions}")
+                .into(binding.imvWeather)
+            binding.tvTemp.text = binding.root.context.getString(R.string.txtTemplate, temple)
         }
     }
 }

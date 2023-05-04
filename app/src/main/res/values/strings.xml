@@ -1,15 +1,22 @@
 <resources>
     <string name="app_name">MyWeather</string>
-    <string name="permissionsDeny">This app needs location permission to run !</string>
-    <string name="toDay">To Day\n</string>
-    <string name="nextFiveDay">Next 5 Days</string>
-    <string name="template">%s ℃</string>
-    <string name="temMin">Temp Min : %s℃</string>
-    <string name="temMax">Temp Max : %s℃</string>
-    <string name="wind">Wind : %s km/h</string>
-    <string name="humidity">Humidity : %s</string>
-    <string name="hintSearch">Enter the location !</string>
-    <string name="yourLocal">My current location</string>
-    <string name="searchErr">Your location could not be found!</string>
-    <string name="templateChart">Temperature ℃</string>
+    <string name="txtPermissionsDeny">This app needs location permission to run !</string>
+    <string name="txtToDay">To Day</string>
+    <string name="txtTimeToDay">To Day%s</string>
+    <string name="txtNextFiveDay"><u>Next 5 Days</u></string>
+    <string name="txtLabelTemplate">Template</string>
+    <string name="txtTemplate">%s°</string>
+    <string name="txtTemMin">Temp Min : %s°</string>
+    <string name="txtTemMax">Temp Max : %s°</string>
+    <string name="txtPressure">%s hpa</string>
+    <string name="txtWind">%s km/h</string>
+    <string name="txtHumidity">%s</string>
+    <string name="txtHintSearch">Enter the location !</string>
+    <string name="txtYourLocal">My current location</string>
+    <string name="txtSearchErr">Your location could not be found!</string>
+    <string name="txtTemplateChart">Temperature ℃</string>
+    <string name="txtMorning">morning</string>
+    <string name="txtAfternoon">afternoon</string>
+    <string name="txtEvening">evening</string>
+    <string name="txtNight">night</string>
 </resources>
