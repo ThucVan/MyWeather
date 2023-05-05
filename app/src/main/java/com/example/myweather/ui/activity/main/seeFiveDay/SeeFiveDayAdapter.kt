@@ -44,7 +44,7 @@ class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SimpleDateFormat")
         fun onBinding(weatherEntity: WeatherEntity) {
-            val temple = DecimalFormat("#.#").format((weatherEntity.main.temp - 273.15))
+            val temple = DecimalFormat("#").format((weatherEntity.main.temp - 273.15))
 
             binding.tvTimeToDay.text = convertTime(weatherEntity.dt ?: 0, "EEEE")
             binding.tvTimeHH.text = convertTime(weatherEntity.dt ?: 0, "dd MMM")

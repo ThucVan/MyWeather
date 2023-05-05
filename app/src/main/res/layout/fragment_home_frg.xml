@@ -187,7 +187,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:text="@string/txtLabelTemplate"
-                        android:textColor="@color/black"
+                        android:textColor="@color/textColor"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 

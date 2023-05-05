@@ -77,17 +77,22 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
 
         binding.fabMyLocation.setOnClickListener {
             if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    this, Manifest.permission.ACCESS_FINE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    this, Manifest.permission.ACCESS_COARSE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 return@setOnClickListener
             }
             fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 10f))
+                googleMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            location.latitude,
+                            location.longitude
+                        ), 10f
+                    )
+                )
             }
         }
     }
@@ -149,7 +154,7 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
                     status.getData().let { weatherFiveDayEntity ->
                         if (weatherFiveDayEntity != null) {
                             temple =
-                                DecimalFormat("#.#").format((weatherFiveDayEntity.main.temp - 273.15))
+                                DecimalFormat("#").format((weatherFiveDayEntity.main.temp - 273.15))
                             iconWeather = weatherFiveDayEntity.weather[0].icon
                             nameCity = weatherFiveDayEntity.name.toString()
 

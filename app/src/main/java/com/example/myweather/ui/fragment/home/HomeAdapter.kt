@@ -46,7 +46,7 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SimpleDateFormat")
         fun onBinding(weatherEntity: WeatherEntity) {
-            val temple = DecimalFormat("#.#").format((weatherEntity.main.temp - 273.15))
+            val temple = DecimalFormat("#").format((weatherEntity.main.temp - 273.15))
 
             binding.tvTimeToDay.text = convertTime(weatherEntity.dt ?: 0, "HH:ss")
 

@@ -111,7 +111,7 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
                     status.getData().let { weatherEntity ->
                         if (weatherEntity != null) {
                             val temple =
-                                DecimalFormat("#.#").format((weatherEntity.main.temp - 273.15))
+                                DecimalFormat("#").format((weatherEntity.main.temp - 273.15))
                             val wind = DecimalFormat("#.#").format((weatherEntity.wind.speed))
                             val humidity =
                                 DecimalFormat("#.#").format((weatherEntity.main.humidity))
