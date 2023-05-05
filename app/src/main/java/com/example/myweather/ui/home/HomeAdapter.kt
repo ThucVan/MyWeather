@@ -1,6 +1,5 @@
-package com.example.myweather.ui.activity.main.seeFiveDay
+package com.example.myweather.ui.home
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,12 +7,12 @@ import com.bumptech.glide.Glide
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
 import com.example.myweather.data.apiEntity.WeatherEntity
-import com.example.myweather.databinding.ItemWeatherFiveDayBinding
+import com.example.myweather.databinding.ItemWeatherBinding
 import com.example.myweather.util.Constants
 import com.example.myweather.util.convertTime
 import java.text.DecimalFormat
 
-class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
+class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     var arrWeather = mutableListOf<WeatherEntity>()
 
     fun setList(newList: List<WeatherEntity>) {
@@ -26,7 +25,7 @@ class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
         parent: ViewGroup, viewType: Int
     ): ViewHolder {
         return ViewHolder(
-            ItemWeatherFiveDayBinding.inflate(
+            ItemWeatherBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
@@ -40,14 +39,12 @@ class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
         return arrWeather.size
     }
 
-    inner class ViewHolder(private val binding: ItemWeatherFiveDayBinding) :
+    inner class ViewHolder(private val binding: ItemWeatherBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("SimpleDateFormat")
         fun onBinding(weatherEntity: WeatherEntity) {
             val temple = DecimalFormat("#").format((weatherEntity.main.temp - 273.15))
 
-            binding.tvTimeToDay.text = convertTime(weatherEntity.dt ?: 0, "EEEE")
-            binding.tvTimeHH.text = convertTime(weatherEntity.dt ?: 0, "dd MMM")
+            binding.tvTimeToday.text = convertTime(weatherEntity.dt ?: 0, "HH:ss")
 
             Glide.with(binding.root.context)
                 .load("${BuildConfig.BASE_GET_IMAGE}${weatherEntity.weather[0].icon}.${Constants.pngExtensions}")

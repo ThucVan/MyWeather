@@ -8,7 +8,7 @@
     android:padding="10dp">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvCity"
+        android:id="@+id/tv_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -23,16 +23,16 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvCity">
+        app:layout_constraintTop_toBottomOf="@id/tv_city">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imvMaker"
+            android:id="@+id/imv_maker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvTemp"
+            android:id="@+id/tv_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

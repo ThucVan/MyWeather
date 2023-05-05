@@ -1,4 +1,4 @@
-package com.example.myweather.ui.activity.main.seeFiveDay
+package com.example.myweather.ui.seeFiveDay
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -12,8 +12,8 @@ import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.ActivitySeeFiveDayBinding
 import com.example.myweather.base.BaseActivity
-import com.example.myweather.ui.fragment.home.HomeAdapter
-import com.example.myweather.ui.fragment.home.HomeFrgViewModel
+import com.example.myweather.ui.home.HomeAdapter
+import com.example.myweather.ui.home.HomeFrgViewModel
 import com.example.myweather.util.Constants.PREF_LATITUDE
 import com.example.myweather.util.Constants.PREF_LONGITUDE
 import com.example.myweather.util.SharePrefUtils
@@ -45,12 +45,12 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
 
         getWeather()
 
-        binding.rcvWeatherFiveDay.apply {
+        binding.rcvWeatherFiveday.apply {
             adapter = seeFiveDayAdapter
             setHasFixedSize(true)
         }
 
-        binding.rcvWeatherToDay.apply {
+        binding.rcvWeatherToday.apply {
             adapter = homeAdapter
             setHasFixedSize(true)
         }

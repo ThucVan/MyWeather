@@ -1,4 +1,4 @@
-package com.example.myweather.ui.fragment.home
+package com.example.myweather.ui.home
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -9,17 +9,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
+import com.example.myweather.base.BaseFragment
 import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.FragmentHomeFrgBinding
-import com.example.myweather.ui.activity.main.seeFiveDay.SeeFiveDayActivity
-import com.example.myweather.base.BaseFragment
-import com.example.myweather.util.Constants
+import com.example.myweather.ui.seeFiveDay.SeeFiveDayActivity
 import com.example.myweather.util.Constants.PREF_LATITUDE
 import com.example.myweather.util.Constants.PREF_LONGITUDE
 import com.example.myweather.util.Constants.percentExtensions
@@ -51,6 +51,30 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
 
     private var position = 0
 
+    private val permReqLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val granted = permissions.entries.all {
+                it.value
+            }
+            if (granted) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        homeFrgViewModel.getWeather(
+                            location.latitude, location.longitude, BuildConfig.API_KEY
+                        )
+                        SharePrefUtils.putLong(PREF_LATITUDE, location.latitude.toLong())
+                        SharePrefUtils.putLong(PREF_LONGITUDE, location.longitude.toLong())
+                    }
+                }
+            }else{
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.txtPermissionsDeny),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
     override fun getViewBinding(
         inflater: LayoutInflater, container: ViewGroup?
     ) = FragmentHomeFrgBinding.inflate(inflater)
@@ -63,6 +87,12 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
 
         getWeather()
 
+        initView()
+
+        observer()
+    }
+
+    private fun initView() {
         binding.rcvWeather.apply {
             adapter = homeAdapter
             setHasFixedSize(true)
@@ -72,8 +102,6 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
             val intent = Intent(requireActivity(), SeeFiveDayActivity::class.java)
             startActivity(intent)
         }
-
-        observer()
     }
 
     private fun getWeather() {
@@ -83,11 +111,10 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
                 requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestPermissions(
+            permReqLauncher.launch(
                 arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ), Constants.REQUEST_CODE
+                    Manifest.permission.READ_CONTACTS, Manifest.permission.ACCESS_FINE_LOCATION
+                )
             )
         } else {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
@@ -116,7 +143,7 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
                             val humidity =
                                 DecimalFormat("#.#").format((weatherEntity.main.humidity))
 
-                            binding.tvTimeToDay.text = requireContext().getString(
+                            binding.tvTimeToday.text = requireContext().getString(
                                 R.string.txtTimeToDay, convertTime(weatherEntity.dt ?: 0, "HH:mm")
                             )
 
@@ -232,42 +259,6 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
             description.isEnabled = false
             axisLeft.isEnabled = false
             axisRight.isEnabled = false
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String?>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == Constants.REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    Toast.makeText(
-                        requireContext(), getString(R.string.txtPermissionsDeny), Toast.LENGTH_LONG
-                    ).show()
-                    return
-                }
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        homeFrgViewModel.getWeather(
-                            location.latitude, location.longitude, BuildConfig.API_KEY
-                        )
-                        SharePrefUtils.putLong(PREF_LATITUDE, location.latitude.toLong())
-                        SharePrefUtils.putLong(PREF_LONGITUDE, location.longitude.toLong())
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.txtPermissionsDeny),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
         }
     }
 }

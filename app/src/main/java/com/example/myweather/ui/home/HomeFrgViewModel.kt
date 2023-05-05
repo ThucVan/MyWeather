@@ -1,4 +1,4 @@
-package com.example.myweather.ui.fragment.home
+package com.example.myweather.ui.home
 
 import com.example.myweather.data.apiEntity.WeatherEntity
 import com.example.myweather.data.apiEntity.WeatherFiveDayEntity

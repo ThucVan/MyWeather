@@ -1,4 +1,4 @@
-package com.example.myweather.ui.fragment.map
+package com.example.myweather.ui.map
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -6,30 +6,46 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import com.example.myweather.BuildConfig
 import com.example.myweather.R
-import com.example.myweather.databinding.FragmentMapFrgBinding
 import com.example.myweather.base.BaseFragment
-import com.example.myweather.util.Constants
+import com.example.myweather.databinding.FragmentMapFrgBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.TileOverlayOptions
-import com.google.android.gms.maps.model.TileProvider
-import com.google.android.gms.maps.model.UrlTileProvider
+import com.google.android.gms.maps.model.*
 import java.net.MalformedURLException
 import java.net.URL
 
 class MapFragment : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var googleMap: GoogleMap
+
+    private val permReqLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val granted = permissions.entries.all {
+                it.value
+            }
+            if (granted) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val currentLatLng = LatLng(location.latitude, location.longitude)
+                        googleMap.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                currentLatLng,
+                                12f
+                            )
+                        )
+                        googleMap.addMarker(MarkerOptions().position(currentLatLng))
+                    }
+                }
+            }
+        }
 
     override fun getViewBinding(
         inflater: LayoutInflater, container: ViewGroup?
@@ -40,7 +56,7 @@ class MapFragment : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         val supportMapFragment =
-            childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment?
+            childFragmentManager.findFragmentById(R.id.fragment_map) as SupportMapFragment?
         supportMapFragment!!.getMapAsync(this)
     }
 
@@ -63,11 +79,10 @@ class MapFragment : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
                 requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestPermissions(
+            permReqLauncher.launch(
                 arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ), Constants.REQUEST_CODE
+                    Manifest.permission.READ_CONTACTS, Manifest.permission.ACCESS_FINE_LOCATION
+                )
             )
         } else {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
@@ -102,38 +117,5 @@ class MapFragment : BaseFragment<FragmentMapFrgBinding>(), OnMapReadyCallback {
         googleMap.addTileOverlay(
             TileOverlayOptions().tileProvider(tileProvider)
         )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String?>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == Constants.REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    Toast.makeText(
-                        requireContext(), getString(R.string.txtPermissionsDeny), Toast.LENGTH_LONG
-                    ).show()
-                    return
-                }
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val currentLatLng = LatLng(location.latitude, location.longitude)
-                        googleMap.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                currentLatLng,
-                                12f
-                            )
-                        )
-                        googleMap.addMarker(MarkerOptions().position(currentLatLng))
-                    }
-                }
-            }
-        }
     }
 }

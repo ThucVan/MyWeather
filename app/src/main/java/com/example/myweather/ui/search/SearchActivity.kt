@@ -1,12 +1,12 @@
-package com.example.myweather.ui.activity.main.search
+package com.example.myweather.ui.search
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.location.Geocoder
 import android.location.Location
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -24,7 +24,7 @@ import com.example.myweather.R
 import com.example.myweather.base.BaseActivity
 import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.ActivitySearchBinding
-import com.example.myweather.ui.fragment.home.HomeFrgViewModel
+import com.example.myweather.ui.home.HomeFrgViewModel
 import com.example.myweather.util.Constants
 import com.example.myweather.util.Constants.PREF_LATITUDE
 import com.example.myweather.util.Constants.PREF_LONGITUDE
@@ -61,9 +61,13 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val supportMapFragment =
-            supportFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment?
+            supportFragmentManager.findFragmentById(R.id.fragment_map) as SupportMapFragment?
         supportMapFragment!!.getMapAsync(this)
 
+        viewOnClick()
+    }
+
+    private fun viewOnClick() {
         binding.buttonBack.setOnClickListener {
             finish()
         }
@@ -88,8 +92,7 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
                 googleMap.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(
                         LatLng(
-                            location.latitude,
-                            location.longitude
+                            location.latitude, location.longitude
                         ), 10f
                     )
                 )
@@ -101,8 +104,19 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
         val searchString = binding.editSearch.text.toString()
         val geocoder = Geocoder(this)
         try {
-            val city = geocoder.getFromLocationName(searchString, 1)
-            currentLatLng = LatLng(city!![0].latitude, city[0].longitude)
+            var latitudeSearch = 0.0
+            var longitudeSearch = 0.0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                geocoder.getFromLocationName(searchString, 1, Geocoder.GeocodeListener {
+                    latitudeSearch = it[0].latitude
+                    longitudeSearch = it[0].longitude
+                })
+            } else {
+                val city = geocoder.getFromLocationName(searchString, 1)
+                latitudeSearch = city?.get(0)?.latitude ?: 0.0
+                longitudeSearch = city?.get(0)?.longitude ?: 0.0
+            }
+            currentLatLng = LatLng(latitudeSearch, longitudeSearch)
 
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
             homeFrgViewModel.getWeather(
@@ -168,15 +182,14 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
         }
     }
 
-    @SuppressLint("MissingInflatedId")
     private fun getMakerView() {
         val makerView: View = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(
             R.layout.maker_view, null
         )
-        val tvCity = makerView.findViewById<TextView>(R.id.tvCity)
+        val tvCity = makerView.findViewById<TextView>(R.id.tv_city)
         val layoutMaker = makerView.findViewById<ConstraintLayout>(R.id.layoutMaker)
-        val imvMaker = makerView.findViewById<ImageView>(R.id.imvMaker)
-        val tvTemp = makerView.findViewById<TextView>(R.id.tvTemp)
+        val imvMaker = makerView.findViewById<ImageView>(R.id.imv_maker)
+        val tvTemp = makerView.findViewById<TextView>(R.id.tv_temp)
         tvTemp.text = getString(R.string.txtTemplate, temple)
         tvCity.text = nameCity
         Glide.with(this).asBitmap()
@@ -205,9 +218,7 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng))
                 }
 
-                override fun onLoadCleared(placeholder: Drawable?) {
-
-                }
+                override fun onLoadCleared(placeholder: Drawable?) {}
             })
     }
 }

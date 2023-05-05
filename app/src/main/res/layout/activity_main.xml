@@ -5,15 +5,15 @@
     android:layout_height="match_parent">
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager2"
+        android:id="@+id/viewpager_main"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_above="@+id/bottomNavigationView"
+        android:layout_above="@+id/bottom_navigationView"
         android:layout_alignParentTop="true"
         android:overScrollMode="never" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+        android:id="@+id/bottom_navigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -21,10 +21,10 @@
         app:menu="@menu/main_bottom_menu" />
 
     <RelativeLayout
-        android:id="@+id/relativeSearch"
+        android:id="@+id/relative_search"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_above="@+id/bottomNavigationView"
+        android:layout_above="@+id/bottom_navigationView"
         android:layout_centerHorizontal="true"
         android:background="@drawable/bg_search"
         app:layout_constraintEnd_toEndOf="parent"
