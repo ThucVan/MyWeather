@@ -20,8 +20,8 @@ import com.example.myweather.databinding.FragmentHomeFrgBinding
 import com.example.myweather.ui.activity.main.seeFiveDay.SeeFiveDayActivity
 import com.example.myweather.base.BaseFragment
 import com.example.myweather.util.Constants
-import com.example.myweather.util.Constants.LATITUDE
-import com.example.myweather.util.Constants.LONGITUDE
+import com.example.myweather.util.Constants.PREF_LATITUDE
+import com.example.myweather.util.Constants.PREF_LONGITUDE
 import com.example.myweather.util.Constants.percentExtensions
 import com.example.myweather.util.SharePrefUtils
 import com.example.myweather.util.convertTime
@@ -61,6 +61,22 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
 
         super.onViewCreated(view, savedInstanceState)
 
+        getWeather()
+
+        binding.rcvWeather.apply {
+            adapter = homeAdapter
+            setHasFixedSize(true)
+        }
+
+        binding.tvNextFiveDay.setOnClickListener {
+            val intent = Intent(requireActivity(), SeeFiveDayActivity::class.java)
+            startActivity(intent)
+        }
+
+        observer()
+    }
+
+    private fun getWeather() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -79,23 +95,11 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
                     homeFrgViewModel.getWeather(
                         location.latitude, location.longitude, BuildConfig.API_KEY
                     )
-                    SharePrefUtils.putLong(LATITUDE, location.latitude.toLong())
-                    SharePrefUtils.putLong(LONGITUDE, location.longitude.toLong())
+                    SharePrefUtils.putLong(PREF_LATITUDE, location.latitude.toLong())
+                    SharePrefUtils.putLong(PREF_LONGITUDE, location.longitude.toLong())
                 }
             }
         }
-
-        binding.rcvWeather.apply {
-            adapter = homeAdapter
-            setHasFixedSize(true)
-        }
-
-        binding.tvNextFiveDay.setOnClickListener {
-            val intent = Intent(requireActivity(), SeeFiveDayActivity::class.java)
-            startActivity(intent)
-        }
-
-        observer()
     }
 
     @SuppressLint("StringFormatMatches")
@@ -177,7 +181,7 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
                                 }
                             }
 
-                            upDateData(dataEntry)
+                            upDateDataLineChart(dataEntry)
 
                             binding.lineChart.animateXY(3000, 3000)
                             homeAdapter.setList(arrWeatherDay)
@@ -198,7 +202,7 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
         }
     }
 
-    private fun upDateData(dataTemp: MutableList<Entry>) {
+    private fun upDateDataLineChart(dataTemp: MutableList<Entry>) {
         lineDataSet = LineDataSet(dataTemp, getString(R.string.txtLabelTemplate))
 
         val dataSets = ArrayList<ILineDataSet>()
@@ -253,8 +257,8 @@ class HomeFragment : BaseFragment<FragmentHomeFrgBinding>() {
                         homeFrgViewModel.getWeather(
                             location.latitude, location.longitude, BuildConfig.API_KEY
                         )
-                        SharePrefUtils.putLong(LATITUDE, location.latitude.toLong())
-                        SharePrefUtils.putLong(LONGITUDE, location.longitude.toLong())
+                        SharePrefUtils.putLong(PREF_LATITUDE, location.latitude.toLong())
+                        SharePrefUtils.putLong(PREF_LONGITUDE, location.longitude.toLong())
                     } else {
                         Toast.makeText(
                             requireContext(),

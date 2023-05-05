@@ -26,8 +26,8 @@ import com.example.myweather.data.liveData.StateData
 import com.example.myweather.databinding.ActivitySearchBinding
 import com.example.myweather.ui.fragment.home.HomeFrgViewModel
 import com.example.myweather.util.Constants
-import com.example.myweather.util.Constants.LATITUDE
-import com.example.myweather.util.Constants.LONGITUDE
+import com.example.myweather.util.Constants.PREF_LATITUDE
+import com.example.myweather.util.Constants.PREF_LONGITUDE
 import com.example.myweather.util.SharePrefUtils
 import com.example.myweather.util.viewToBitmap
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -50,8 +50,8 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
     private var temple = ""
     private var iconWeather = ""
     private var nameCity = ""
-    private val latitude = SharePrefUtils.getLong(LATITUDE, 0)
-    private val longitude = SharePrefUtils.getLong(LONGITUDE, 0)
+    private val latitude = SharePrefUtils.getLong(PREF_LATITUDE, 0)
+    private val longitude = SharePrefUtils.getLong(PREF_LONGITUDE, 0)
     private var currentLatLng = LatLng(latitude.toDouble(), longitude.toDouble())
     private lateinit var googleMap: GoogleMap
 
@@ -74,6 +74,22 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
             }
             false
         }
+
+        binding.fabMyLocation.setOnClickListener {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return@setOnClickListener
+            }
+            fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 10f))
+            }
+        }
     }
 
     private fun getLocation() {
@@ -83,7 +99,7 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
             val city = geocoder.getFromLocationName(searchString, 1)
             currentLatLng = LatLng(city!![0].latitude, city[0].longitude)
 
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
             homeFrgViewModel.getWeather(
                 currentLatLng.latitude, currentLatLng.longitude, BuildConfig.API_KEY
             )
@@ -95,7 +111,6 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
     override fun onMapReady(googleMap: GoogleMap) {
         observer()
         this.googleMap = googleMap
-        googleMap.uiSettings.isZoomControlsEnabled = true
 
         if (ActivityCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION
@@ -111,12 +126,12 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
             if (location != null) {
                 lastLocation = location
                 currentLatLng = LatLng(location.latitude, location.longitude)
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
                 homeFrgViewModel.getWeather(
                     location.latitude, location.longitude, BuildConfig.API_KEY
                 )
             } else {
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
                 homeFrgViewModel.getWeather(
                     latitude.toDouble(), longitude.toDouble(), BuildConfig.API_KEY
                 )
@@ -181,7 +196,7 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(), OnMapReadyCallback
                     googleMap.addMarker(
                         MarkerOptions().position(currentLatLng).icon(smallMakerIcon)
                     )
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20f))
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng))
                 }
 

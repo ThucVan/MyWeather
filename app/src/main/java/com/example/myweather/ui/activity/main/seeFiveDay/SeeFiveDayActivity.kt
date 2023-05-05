@@ -14,8 +14,8 @@ import com.example.myweather.databinding.ActivitySeeFiveDayBinding
 import com.example.myweather.base.BaseActivity
 import com.example.myweather.ui.fragment.home.HomeAdapter
 import com.example.myweather.ui.fragment.home.HomeFrgViewModel
-import com.example.myweather.util.Constants.LATITUDE
-import com.example.myweather.util.Constants.LONGITUDE
+import com.example.myweather.util.Constants.PREF_LATITUDE
+import com.example.myweather.util.Constants.PREF_LONGITUDE
 import com.example.myweather.util.SharePrefUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -29,6 +29,7 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var arrWeatherDay = mutableListOf<WeatherEntity>()
+    private var arrSeeFiveDay = mutableListOf<WeatherEntity>()
     private lateinit var homeAdapter: HomeAdapter
     private lateinit var seeFiveDayAdapter: SeeFiveDayAdapter
 
@@ -42,6 +43,22 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
         binding.buttonBack.setOnClickListener { finish() }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        getWeather()
+
+        binding.rcvWeatherFiveDay.apply {
+            adapter = seeFiveDayAdapter
+            setHasFixedSize(true)
+        }
+
+        binding.rcvWeatherToDay.apply {
+            adapter = homeAdapter
+            setHasFixedSize(true)
+        }
+
+        observer()
+    }
+
+    private fun getWeather(){
         if (ActivityCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -57,19 +74,12 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
                 )
             } else {
                 homeFrgViewModel.getWeather(
-                    SharePrefUtils.getLong(LATITUDE, 0).toDouble(), SharePrefUtils.getLong(
-                        LONGITUDE, 0
+                    SharePrefUtils.getLong(PREF_LATITUDE, 0).toDouble(), SharePrefUtils.getLong(
+                        PREF_LONGITUDE, 0
                     ).toDouble(), BuildConfig.API_KEY
                 )
             }
         }
-
-        binding.rcvWeatherFiveDay.apply {
-            adapter = seeFiveDayAdapter
-            setHasFixedSize(true)
-        }
-
-        observer()
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -89,16 +99,28 @@ class SeeFiveDayActivity : BaseActivity<ActivitySeeFiveDayBinding>() {
                             val sdf = SimpleDateFormat("yyyy-MM-dd")
                             val currentDate: String = sdf.format(calendar.time)
 
+                            if (arrSeeFiveDay.size == 0) {
+                                arrSeeFiveDay.add(weatherFiveDayEntity.list[0])
+                            }
+
                             weatherFiveDayEntity.list.forEach { weatherEntity ->
                                 val startDate = weatherEntity.dt_txt?.let { sdf.parse(it) }
                                 val newDateString: String = sdf.format(startDate!!)
                                 if (newDateString == currentDate) {
                                     arrWeatherDay.add(weatherEntity)
                                 }
+
+                                if (startDate != arrSeeFiveDay[arrSeeFiveDay.lastIndex].dt_txt?.let {
+                                        sdf.parse(
+                                            it
+                                        )
+                                    }) {
+                                    arrSeeFiveDay.add(weatherEntity)
+                                }
                             }
 
                             homeAdapter.setList(arrWeatherDay)
-                            seeFiveDayAdapter.setList(weatherFiveDayEntity.list)
+                            seeFiveDayAdapter.setList(arrSeeFiveDay)
                         }
                     }
                 }

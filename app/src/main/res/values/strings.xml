@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">MyWeather</string>
     <string name="txtPermissionsDeny">This app needs location permission to run !</string>
-    <string name="txtToDay">To Day</string>
-    <string name="txtTimeToDay">To Day%s</string>
+    <string name="txtToDay">Today</string>
+    <string name="txtTimeToDay">Today%s</string>
     <string name="txtNextFiveDay"><u>Next 5 Days</u></string>
     <string name="txtLabelTemplate">Template</string>
     <string name="txtTemplate">%s°</string>

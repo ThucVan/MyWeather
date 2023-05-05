@@ -46,12 +46,13 @@ class SeeFiveDayAdapter : RecyclerView.Adapter<SeeFiveDayAdapter.ViewHolder>() {
         fun onBinding(weatherEntity: WeatherEntity) {
             val temple = DecimalFormat("#.#").format((weatherEntity.main.temp - 273.15))
 
-            binding.tvToday.text = convertTime(weatherEntity.dt ?: 0, "EEEE")
+            binding.tvTimeToDay.text = convertTime(weatherEntity.dt ?: 0, "EEEE")
+            binding.tvTimeHH.text = convertTime(weatherEntity.dt ?: 0, "dd MMM")
 
-//            Glide.with(binding.root.context)
-//                .load("${BuildConfig.BASE_GET_IMAGE}${weatherEntity.weather[0].icon}.${Constants.pngExtensions}")
-//                .into(binding.imvWeather)
-//            binding.tvTemp.text = binding.root.context.getString(R.string.txtTemplate, temple)
+            Glide.with(binding.root.context)
+                .load("${BuildConfig.BASE_GET_IMAGE}${weatherEntity.weather[0].icon}.${Constants.pngExtensions}")
+                .into(binding.imvWeather)
+            binding.tvTemp.text = binding.root.context.getString(R.string.txtTemplate, temple)
         }
     }
 }

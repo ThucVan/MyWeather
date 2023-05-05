@@ -36,6 +36,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             }
         }
 
+        setUpViewPager()
+
+        setUpNavigation()
+
+        binding.relativeSearch.setOnClickListener {
+            startActivity(Intent(this, SearchActivity::class.java))
+        }
+    }
+
+    private fun setUpViewPager() {
         viewPager2Adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
         viewPager2Adapter.addFragment(HomeFragment())
         viewPager2Adapter.addFragment(MapFragment())
@@ -48,7 +58,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             isUserInputEnabled = false
         }
 
-        binding.bottomNavigationView.setOnApplyWindowInsetsListener(null)
         binding.viewPager2.apply {
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -62,6 +71,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 }
             })
         }
+    }
+
+    private fun setUpNavigation() {
+        binding.bottomNavigationView.setOnApplyWindowInsetsListener(null)
+
 
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -79,10 +93,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 }
             }
             true
-        }
-
-        binding.relativeSearch.setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
         }
     }
 
